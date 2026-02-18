@@ -1,0 +1,8 @@
+{
+  "name": "mqtt-examples",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "mqtt": "^4.3.7"
+  }
+}

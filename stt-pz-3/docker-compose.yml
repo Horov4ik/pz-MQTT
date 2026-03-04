@@ -7,7 +7,8 @@ services:
       - "1883:1883"    # MQTT
       - "9001:9001"    # MQTT over Websockets (для клієнтів, що підтримують websockets)
     volumes:
-      - ./broker/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      # Mount the whole broker folder (safer on Windows) so Mosquitto can access the config and data
+      - ./broker:/mosquitto/config
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
 

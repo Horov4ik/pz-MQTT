@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>MQTT Console Logger</title>
+</head>
+<body>
+    <h2>MQTT Console Logger</h2>
+    <p>Відкрийте DevTools → Console для перегляду повідомлень</p>
+
+    <!-- MQTT.js через CDN -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+    <script>
+        // ⚙️ Налаштування брокера
+        const brokerUrl = 'mqtt://localhost:1883'; // змініть на ваш брокер
+        const topic = 'pz/test';
+
+        // Підключення
+        const client = mqtt.connect(brokerUrl);
+
+        client.on('connect', function () {
+            console.log('✅ Підключено до MQTT брокера');
+
+            client.subscribe(topic, function (err) {
+                if (!err) {
+                    console.log('📡 Підписка на топік:', topic);
+                } else {
+                    console.error('❌ Помилка підписки:', err);
+                }
+            });
+        });
+
+        client.on('message', function (topic, message) {
+            console.log('📨 Повідомлення з топіка:', topic);
+            console.log('📦 Дані:', message.toString());
+        });
+
+        client.on('error', function (err) {
+            console.error('⚠️ Помилка MQTT:', err);
+        });
+    </script>
+</body>
+</html>

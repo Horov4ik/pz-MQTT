@@ -1,0 +1,54 @@
+groups:
+  - name: container_alerts
+    rules:
+      # Alert when any container is down for more than 30 seconds
+      - alert: ContainerDown
+        expr: time() - container_last_seen{name=~".+"} > 60
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container {{ $labels.name }} is down"
+          description: "Container {{ $labels.name }} has been down for more than 30 seconds."
+
+      # Alert when container CPU usage exceeds 80%
+      - alert: HighCpuUsage
+        expr: rate(container_cpu_usage_seconds_total{name=~".+"}[1m]) * 100 > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.name }}"
+          description: "Container {{ $labels.name }} CPU usage is above 80%."
+
+      # Alert when container memory usage exceeds 80%
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes{name=~".+"} / container_spec_memory_limit_bytes{name=~".+"} * 100 > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.name }}"
+          description: "Container {{ $labels.name }} memory usage is above 80%."
+
+  - name: service_alerts
+    rules:
+      # Alert when a scrape target is down
+      - alert: ServiceDown
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "Prometheus target {{ $labels.instance }} (job: {{ $labels.job }}) is unreachable."
+
+      # Alert when MQTT broker is unavailable
+      - alert: MqttBrokerDown
+        expr: mqtt_broker_available == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "MQTT Broker is down"
+          description: "MQTT broker (Mosquitto) is unreachable from web-service-1."

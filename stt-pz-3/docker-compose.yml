@@ -1,13 +1,15 @@
 version: '3.8'
 services:
+  # ========================
+  # Application Services
+  # ========================
   mosquitto:
     image: eclipse-mosquitto:2.0
     container_name: mosquitto
     ports:
       - "1883:1883"    # MQTT
-      - "9001:9001"    # MQTT over Websockets (для клієнтів, що підтримують websockets)
+      - "9001:9001"    # MQTT over Websockets
     volumes:
-      # Mount the whole broker folder (safer on Windows) so Mosquitto can access the config and data
       - ./broker:/mosquitto/config
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
@@ -17,7 +19,7 @@ services:
       context: ./web1
     container_name: web-service-1
     ports:
-      - "5001:5000"    # внутрішній Flask на 5000 -> хост 5001
+      - "5001:5000"
     depends_on:
       - mosquitto
 
@@ -26,10 +28,78 @@ services:
       context: ./web2
     container_name: web-service-2
     ports:
-      - "5002:5000"    # внутрішній Flask на 5000 -> хост 5002
+      - "5002:5000"
     depends_on:
       - mosquitto
+
+  # ========================
+  # Monitoring Stack
+  # ========================
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
+    depends_on:
+      - web1
+      - web2
+      - cadvisor
+
+  grafana:
+    image: grafana/grafana:10.4.1
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager:/etc/alertmanager
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yml"
+
+  # ========================
+  # Metrics Exporters
+  # ========================
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    privileged: true
+
+  node-exporter:
+    image: prom/node-exporter:v1.7.0
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
 
 volumes:
   mosquitto_data:
   mosquitto_log:
+  prometheus_data:
+  grafana_data:

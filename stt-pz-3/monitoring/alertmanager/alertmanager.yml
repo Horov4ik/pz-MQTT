@@ -1,0 +1,25 @@
+global:
+  resolve_timeout: 1m
+
+route:
+  receiver: "telegram"
+  group_by: ["alertname"]
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 3h
+
+receivers:
+  - name: "telegram"
+    telegram_configs:
+      - bot_token: "8615976197:AAE5F-50OhqrDSd-me43aTVA-T0ni8BKOTM"
+        chat_id: 976981028  # Replace with your chat ID (integer)
+        api_url: "https://api.telegram.org"
+        parse_mode: "HTML"
+        message: |
+          <b>🚨 {{ .Status | toUpper }}</b>
+          {{ range .Alerts }}
+          <b>Alert:</b> {{ .Labels.alertname }}
+          <b>Severity:</b> {{ .Labels.severity }}
+          <b>Summary:</b> {{ .Annotations.summary }}
+          <b>Description:</b> {{ .Annotations.description }}
+          {{ end }}

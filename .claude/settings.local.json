@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker ps:*)",
+      "Bash(curl:*)",
+      "Bash(python:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker-compose:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(# Try different approaches echo \"\"=== irate [1m] ===\"\" curl -s \"\"http://localhost:9090/api/v1/query?query=irate\\(container_cpu_usage_seconds_total%7Bid%3D~%22%2Fdocker%2F.%2B%22%7D%5B1m%5D\\)\"\")",
+      "Bash(1 echo \"=== changes [5m] ===\" curl -s \"http://localhost:9090/api/v1/query?query=changes\\(container_cpu_usage_seconds_total%7Bid%3D~%22%2Fdocker%2F.%2B%22%7D%5B5m%5D\\)\")",
+      "Bash(1 echo \"\" echo \"=== RAM \\(process_resident_memory_bytes\\) ===\" curl -s \"http://localhost:9090/api/v1/query?query=process_resident_memory_bytes\")",
+      "Bash(1 echo \"\" echo \"=== MQTT ===\" curl -s \"http://localhost:9090/api/v1/query?query=mqtt_broker_available\")",
+      "Bash(1 echo \"\" echo \"=== All targets ===\" curl -s \"http://localhost:9090/api/v1/query?query=up\")"
+    ]
+  }
+}

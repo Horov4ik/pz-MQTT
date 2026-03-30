@@ -116,14 +116,14 @@ docker compose ps
 
 ## Крок 3: Доступ до сервісів
 
-| Сервіс | URL |
-|---|---|
-| Web1 (MQTT Console) | http://localhost:5001 |
-| Web2 (API) | http://localhost:5002 |
-| Prometheus | http://localhost:9090 |
-| Grafana | http://localhost:3000 |
-| Alertmanager | http://localhost:9093 |
-| cAdvisor | http://localhost:8080 |
+| Сервіс | URL                    |
+|---|------------------------|
+| Web1 (MQTT Console) | http:в//localhost:5001 |
+| Web2 (API) | http://localhost:5002  |
+| Prometheus | http://localhost:9090  |
+| Grafana | http://localhost:3000  |
+| Alertmanager | http://localhost:9093  |
+| cAdvisor | http://localhost:8080  |
 
 ### Grafana
 

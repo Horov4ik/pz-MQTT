@@ -47,7 +47,7 @@
       ]
     },
     {
-      "title": "Container CPU Usage (%)",
+      "title": "CPU Usage (%)",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
@@ -78,14 +78,29 @@
       },
       "targets": [
         {
-          "expr": "rate(container_cpu_usage_seconds_total{name=~\".+\"}[1m]) * 100",
-          "legendFormat": "{{ name }}",
+          "expr": "rate(process_cpu_seconds_total{job=\"web1\"}[1m]) * 100",
+          "legendFormat": "web1",
           "refId": "A"
+        },
+        {
+          "expr": "rate(process_cpu_seconds_total{job=\"web2\"}[1m]) * 100",
+          "legendFormat": "web2",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(process_cpu_seconds_total{job=\"prometheus\"}[1m]) * 100",
+          "legendFormat": "prometheus",
+          "refId": "C"
+        },
+        {
+          "expr": "rate(node_cpu_seconds_total{mode!=\"idle\"}[1m]) * 100",
+          "legendFormat": "host {{ cpu }} ({{ mode }})",
+          "refId": "D"
         }
       ]
     },
     {
-      "title": "Container RAM Usage (MB)",
+      "title": "RAM Usage (MB)",
       "type": "timeseries",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
@@ -115,9 +130,24 @@
       },
       "targets": [
         {
-          "expr": "container_memory_usage_bytes{name=~\".+\"} / 1024 / 1024",
-          "legendFormat": "{{ name }}",
+          "expr": "process_resident_memory_bytes{job=\"web1\"} / 1024 / 1024",
+          "legendFormat": "web1",
           "refId": "A"
+        },
+        {
+          "expr": "process_resident_memory_bytes{job=\"web2\"} / 1024 / 1024",
+          "legendFormat": "web2",
+          "refId": "B"
+        },
+        {
+          "expr": "process_resident_memory_bytes{job=\"prometheus\"} / 1024 / 1024",
+          "legendFormat": "prometheus",
+          "refId": "C"
+        },
+        {
+          "expr": "node_memory_MemTotal_bytes / 1024 / 1024 - node_memory_MemAvailable_bytes / 1024 / 1024",
+          "legendFormat": "host (used)",
+          "refId": "D"
         }
       ]
     },
@@ -287,13 +317,13 @@
       },
       "targets": [
         {
-          "expr": "rate(container_network_receive_bytes_total{name=~\".+\"}[1m])",
-          "legendFormat": "{{ name }} RX",
+          "expr": "rate(node_network_receive_bytes_total{device!=\"lo\"}[1m])",
+          "legendFormat": "RX {{ device }}",
           "refId": "A"
         },
         {
-          "expr": "rate(container_network_transmit_bytes_total{name=~\".+\"}[1m])",
-          "legendFormat": "{{ name }} TX",
+          "expr": "rate(node_network_transmit_bytes_total{device!=\"lo\"}[1m])",
+          "legendFormat": "TX {{ device }}",
           "refId": "B"
         }
       ]

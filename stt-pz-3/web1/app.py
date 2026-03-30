@@ -19,7 +19,7 @@ def check_mqtt():
     while True:
         try:
             client = mqtt.Client()
-            client.connect("mosquitto", 1883, timeout=5)
+            client.connect("mosquitto", 1883, keepalive=5)
             client.disconnect()
             mqtt_available.set(1)
         except Exception:
